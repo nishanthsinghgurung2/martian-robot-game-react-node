@@ -1,123 +1,139 @@
 
 const robotLostCoords = [];
 const robotsFinalCoords = [];
+
+// Gets the new robot direction after moving by 90 degrees
 const getRobotNewDirection = (currentDirection, currentInstruction) => {
-    if(currentDirection === 'N') {
-        if(currentInstruction === 'L') {
-            return 'W';
-        } else if(currentInstruction === 'R') {
-            return 'E';
-        }
-    } else if(currentDirection === 'E') {
-        if(currentInstruction === 'L') {
-            return 'N';
-        } else if(currentInstruction === 'R') {
-            return 'S';
-        }
-    } else if(currentDirection === 'S') {
-        if(currentInstruction === 'L') {
-            return 'E';
-        } else if(currentInstruction === 'R') {
-            return 'W';
-        }
-    } else if(currentDirection === 'W') {
-        if(currentInstruction === 'L') {
-            return 'S';
-        } else if(currentInstruction === 'R') {
-            return 'N';
-        }
+    switch(currentDirection) {
+        case 'N': return ((currentInstruction === 'L')? 'W': (
+            (currentInstruction === 'R')? 'E': currentDirection));
+        case 'E': return ((currentInstruction === 'L')? 'N': (
+            (currentInstruction === 'R')? 'S': currentDirection));
+        case 'S': return ((currentInstruction === 'L')? 'E': (
+            (currentInstruction === 'R')? 'W': currentDirection));
+        case 'W': return ((currentInstruction === 'L')? 'S': (
+            (currentInstruction === 'R')? 'N': currentDirection));
+        default: return currentDirection;
     }
-    return currentDirection;
 };
 
+// Checks if the robot is at the coordinates from where one of the previous robots were lost
+const isLostCoords = (lostCoords, currentCoords) => {
+    let currentCoords_as_string = JSON.stringify(currentCoords);
+  
+    let currentCoordsInLostCoords = lostCoords.some(function(lostCoord){
+      return JSON.stringify(lostCoord) === currentCoords_as_string;
+    });
+    return currentCoordsInLostCoords;
+};
+
+// Records the coordinates from where the robot is lost
+const recordLostCoords = (robotCurrentCoords) => {
+    robotLostCoords.push(robotCurrentCoords.slice());
+    robotCurrentCoords.push('LOST');
+    robotsFinalCoords.push(robotCurrentCoords);
+};
+
+// Move the robots forward in the choosen direction and gets the new robot coordinates
 const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
-    if(robotLostCoords.includes(robotCurrentCoords)) {
-        console.log('Lost coordinates. Do not move');
+    if(isLostCoords(robotLostCoords,robotCurrentCoords)) {
+        console.log('Lost coordinates. Robot does not move');
     } else {
-        if(robotCurrentCoords[2] === 'N') {
-            // falls from edge
-            if(Number(robotCurrentCoords[1]) + 1 > boundaryCoords[1]){
-                robotLostCoords.push(robotCurrentCoords);
-                let robotCoords = robotCurrentCoords.split('').join(' ');
-                robotCoords = robotCoords + ' LOST';
-                robotsFinalCoords.push(robotCoords);
-                robotCurrentCoords = robotCoords;
-            } else {
-                let newYCoord = Number(robotCurrentCoords[1]) + 1;
-                robotCurrentCoords = robotCurrentCoords.substr(0,1) + newYCoord + robotCurrentCoords.substr(1 + newYCoord.toString().length);
+        switch(robotCurrentCoords[2]) {
+            case 'N': {
+                if(Number(robotCurrentCoords[1]) + 1 > Number(boundaryCoords[1])){
+                    recordLostCoords(robotCurrentCoords);
+                } else {
+                    let newYCoord = Number(robotCurrentCoords[1]) + 1;
+                    robotCurrentCoords[1]= newYCoord.toString();
+                }
+                break;
             }
-        } else if(robotCurrentCoords[2] === 'E') {
-            // falls from edge
-            if(Number(robotCurrentCoords[0]) + 1 > Number(boundaryCoords[0])){
-                robotLostCoords.push(robotCurrentCoords);
-                let robotCoords = robotCurrentCoords.split('').join(' ');
-                robotCoords = robotCoords + ' LOST';
-                robotsFinalCoords.push(robotCoords);
-                robotCurrentCoords = robotCoords;
-            } else {
-                let newXCoord = Number(robotCurrentCoords[0]) + 1;
-                robotCurrentCoords = robotCurrentCoords.substr(0,0) + newXCoord + robotCurrentCoords.substr(0 + newXCoord.toString().length);
+            case 'E': {
+                if(Number(robotCurrentCoords[0]) + 1 > Number(boundaryCoords[0])){
+                    recordLostCoords(robotCurrentCoords);
+                } else {
+                    let newXCoord = Number(robotCurrentCoords[0]) + 1;
+                    robotCurrentCoords[0]= newXCoord.toString();
+                }
+                break;
             }
-        } else if(robotCurrentCoords[2] === 'S') {
-            // falls from edge
-            if(Number(robotCurrentCoords[1]) - 1 < 0){
-                robotLostCoords.push(robotCurrentCoords);
-                let robotCoords = robotCurrentCoords.split('').join(' ');
-                robotCoords = robotCoords + ' LOST';
-                robotsFinalCoords.push(robotCoords);
-                robotCurrentCoords = robotCoords;
-            } else {
-                let newYCoord = Number(robotCurrentCoords[1]) - 1;
-                robotCurrentCoords = robotCurrentCoords.substr(0,1) + newYCoord + robotCurrentCoords.substr(1 + newYCoord.toString().length);
+            case 'S': {
+                if(Number(robotCurrentCoords[1]) - 1 < 0){
+                    recordLostCoords(robotCurrentCoords);
+                } else {
+                    let newYCoord = Number(robotCurrentCoords[1]) - 1;
+                    robotCurrentCoords[1]= newYCoord.toString();
+                }
+                break;
             }
-        } else if(robotCurrentCoords[2] === 'W') {
-            // falls from edge
-            if(Number(robotCurrentCoords[0]) - 1 < 0){
-                robotLostCoords.push(robotCurrentCoords);
-                let robotCoords = robotCurrentCoords.split('').join(' ');
-                robotCoords = robotCoords + ' LOST';
-                robotsFinalCoords.push(robotCoords);
-                robotCurrentCoords = robotCoords;
-            } else {
-                let newXCoord = Number(robotCurrentCoords[0]) - 1;
-                robotCurrentCoords = robotCurrentCoords.substr(0,0) + newXCoord + robotCurrentCoords.substr(0 + newXCoord.toString().length);
+            case 'W': {
+                if(Number(robotCurrentCoords[0]) - 1 < 0){
+                    recordLostCoords(robotCurrentCoords);
+                } else {
+                    let newXCoord = Number(robotCurrentCoords[0]) - 1;
+                    robotCurrentCoords[0] = newXCoord.toString();
+                }
+                break;
             }
-        } 
+        }
     }
     return robotCurrentCoords;
 };
 
+// Gets the final positions of all the robots in the mars
 const getFinalRobotPositions = (robotsMovementsInput) => {
-    const boundaryCoords = robotsMovementsInput.upperCoordinates.split(' ').join('');
-    const robotsNewPositions = [];
+    let boundaryCoords;
+    let robotsNewPositions = [];
 
-    robotsMovementsInput.robotsPositions && robotsMovementsInput.robotsPositions.forEach(robot => {
-        let robotCurrentCoords = robot.robotPosition.split(' ').join('');
-        const robotCurrendDirection = robotCurrentCoords[2];
-        // robotCurrentCoords.splice(2, 1);
-        const robotInstruciton = robot.robotInstruction;
-        let newDirection = robotCurrendDirection;
-        let newCoords = null;
-        let robotFall = false;
-        for(let i=0; i< robotInstruciton.length; i++) {
-            if(robotInstruciton[i] === 'L' || robotInstruciton[i] === 'R') {
-                newDirection = getRobotNewDirection(robotCurrentCoords[2], robotInstruciton[i]);
-                robotCurrentCoords = robotCurrentCoords.substr(0,2) + newDirection + robotCurrentCoords.substr(2 + newDirection.length);    
-            } else if(robotInstruciton[i] === 'F') {
-                newCoords = moveRobotAndGetNewCords(robotCurrentCoords, boundaryCoords);
-                if(newCoords.indexOf('LOST') > -1) {
-                    robotFall = true;
-                    break;
-                } else {
-                    robotCurrentCoords = newCoords;
+    const { upperCoordinates, robotsPositions } = robotsMovementsInput;
+
+    if(robotsMovementsInput && upperCoordinates) {
+        boundaryCoords = robotsMovementsInput.upperCoordinates.split(' ');
+    } else {
+        return new Error('Invalid robots movements input');
+    }
+    
+    if(!robotsPositions || !Array.isArray(robotsPositions)){
+        return new Error('Invalid robots positions');
+    } else {
+        robotsMovementsInput.robotsPositions && robotsMovementsInput.robotsPositions.forEach(robot => {
+            let robotCurrentCoords = robot.robotPosition.split(' ');
+            let newDirection = robotCurrendDirection;
+            let newCoords = null;
+            let robotFall = false;
+            const robotCurrendDirection = robotCurrentCoords[2];
+            const robotInstruction = robot.robotInstruction;
+            
+            for(let i=0; i< robotInstruction.length; i++) {
+                if(robotInstruction[i] === 'L' || robotInstruction[i] === 'R') {
+                    // Gets the new direction of robot
+                    newDirection = getRobotNewDirection(robotCurrentCoords[2], robotInstruction[i]);
+                    robotCurrentCoords[2] = newDirection;
+                } else if(robotInstruction[i] === 'F') {
+                    // Moves the robot in the given direction and get the updated coordinates
+                    newCoords = moveRobotAndGetNewCords(robotCurrentCoords, boundaryCoords);
+                    if(newCoords.includes('LOST')) {
+                        robotFall = true;
+                        break;
+                    } else {
+                        robotCurrentCoords = newCoords;
+                    }
                 }
             }
-        }
-        if(!robotFall) {
-            robotsFinalCoords.push(robotCurrentCoords);
-        }
-    })
-    return robotsFinalCoords;
+    
+            if(!robotFall) {
+                robotsFinalCoords.push(robotCurrentCoords);
+            }
+        })
+        
+        robotsFinalCoords.forEach(robotFinalCoord => {
+            robotsNewPositions.push(robotFinalCoord.join(' '));
+        });
+    
+        return robotsNewPositions;
+    }
+    
 };
 
 const robotsMovementsInput = {
@@ -139,4 +155,6 @@ const robotsMovementsInput = {
     ]
 };
 
-console.log('final robot positions....', getFinalRobotPositions(robotsMovementsInput));
+let finalRobotCoords = getFinalRobotPositions(robotsMovementsInput);
+console.log('final robot positions', finalRobotCoords );
+export default finalRobotCoords;
