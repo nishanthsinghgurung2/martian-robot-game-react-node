@@ -7,7 +7,6 @@ describe('getFinalRobotPositions', () => {
     it('should get the final positions of the robot that doesnt fall', () => {
         const robotsMovementsInput = {
             'upperCoordinates': '5 3',
-            'numOfRobots': 3,
             'robotsPositions': [
                 {
                     'robotPosition': '1 1 E',
@@ -21,7 +20,6 @@ describe('getFinalRobotPositions', () => {
     it('should get the final positions of the robot that falls', () => {
         const robotsMovementsInput2 = {
             'upperCoordinates': '5 3',
-            'numOfRobots': 3,
             'robotsPositions': [
                 {
                     'robotPosition': '3 2 N',
@@ -35,7 +33,6 @@ describe('getFinalRobotPositions', () => {
     it('should get the final positions of the robots that has a mix of ones that falls and the others that doesnt', () => {
         const robotsMovementsInput2 = {
              'upperCoordinates': '5 3',
-             'numOfRobots': 3,
              'robotsPositions': [
                 {
                     "robotPosition": "1 1 E",
@@ -61,7 +58,6 @@ describe('getFinalRobotPositions', () => {
         it('should error when input is invalid', () => {
             const robotsMovementsInput = {
                 'upperCoordinates': '500 300', // boundary is [50, 50] based on problem description
-                'numOfRobots': 3,
                 'robotsPositions': [
                     {
                         'robotPosition': '3 2 N',
@@ -75,7 +71,6 @@ describe('getFinalRobotPositions', () => {
         it('should error when robots positions are invalid', () => {
             const robotsMovementsInput = {
                 'upperCoordinates': '5 3',
-                'numOfRobots': 3,
                 'robotsPositions': [
                     {
                         'robotPosition': '3 200 P',
@@ -88,7 +83,6 @@ describe('getFinalRobotPositions', () => {
         it('should error when robots instructions are invalid', () => {
             const robotsMovementsInput = {
                 'upperCoordinates': '5 3',
-                'numOfRobots': 3,
                 'robotsPositions': [
                     {
                         'robotPosition': '3 2 N',

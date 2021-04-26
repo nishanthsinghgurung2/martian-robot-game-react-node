@@ -4,7 +4,6 @@ import app from '../index';
 
 const robotsMovementsInput = {
     'upperCoordinates': '5 3',
-    'numOfRobots': 3,
     'robotsPositions': [
        {
            "robotPosition": "1 1 E",
