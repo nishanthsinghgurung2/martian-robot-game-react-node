@@ -1,7 +1,3 @@
-
-const robotLostCoords = [];
-const robotsFinalCoords = [];
-
 // Gets the new robot direction after moving by 90 degrees
 const getRobotNewDirection = (currentDirection, currentInstruction) => {
     switch(currentDirection) {
@@ -28,21 +24,21 @@ const isLostCoords = (lostCoords, currentCoords) => {
 };
 
 // Records the coordinates from where the robot is lost
-const recordLostCoords = (robotCurrentCoords) => {
+const recordLostCoords = (robotCurrentCoords, robotLostCoords, robotsFinalCoords) => {
     robotLostCoords.push(robotCurrentCoords.slice());
     robotCurrentCoords.push('LOST');
     robotsFinalCoords.push(robotCurrentCoords);
 };
 
 // Move the robots forward in the choosen direction and gets the new robot coordinates
-const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
+const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords, robotLostCoords, robotsFinalCoords) => {
     if(isLostCoords(robotLostCoords,robotCurrentCoords)) {
         console.log('Lost coordinates. Robot does not move');
     } else {
         switch(robotCurrentCoords[2]) {
             case 'N': {
                 if(Number(robotCurrentCoords[1]) + 1 > Number(boundaryCoords[1])){
-                    recordLostCoords(robotCurrentCoords);
+                    recordLostCoords(robotCurrentCoords, robotLostCoords, robotsFinalCoords);
                 } else {
                     let newYCoord = Number(robotCurrentCoords[1]) + 1;
                     robotCurrentCoords[1]= newYCoord.toString();
@@ -51,7 +47,7 @@ const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
             }
             case 'E': {
                 if(Number(robotCurrentCoords[0]) + 1 > Number(boundaryCoords[0])){
-                    recordLostCoords(robotCurrentCoords);
+                    recordLostCoords(robotCurrentCoords, robotLostCoords, robotsFinalCoords);
                 } else {
                     let newXCoord = Number(robotCurrentCoords[0]) + 1;
                     robotCurrentCoords[0]= newXCoord.toString();
@@ -60,7 +56,7 @@ const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
             }
             case 'S': {
                 if(Number(robotCurrentCoords[1]) - 1 < 0){
-                    recordLostCoords(robotCurrentCoords);
+                    recordLostCoords(robotCurrentCoords, robotLostCoords, robotsFinalCoords);
                 } else {
                     let newYCoord = Number(robotCurrentCoords[1]) - 1;
                     robotCurrentCoords[1]= newYCoord.toString();
@@ -69,7 +65,7 @@ const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
             }
             case 'W': {
                 if(Number(robotCurrentCoords[0]) - 1 < 0){
-                    recordLostCoords(robotCurrentCoords);
+                    recordLostCoords(robotCurrentCoords, robotLostCoords, robotsFinalCoords);
                 } else {
                     let newXCoord = Number(robotCurrentCoords[0]) - 1;
                     robotCurrentCoords[0] = newXCoord.toString();
@@ -82,9 +78,11 @@ const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords) => {
 };
 
 // Gets the final positions of all the robots in the mars
-const getFinalRobotPositions = (robotsMovementsInput) => {
+export const getFinalRobotPositions = (robotsMovementsInput) => {
     let boundaryCoords;
     let robotsNewPositions = [];
+    const robotLostCoords = [];
+    const robotsFinalCoords = [];
 
     const { upperCoordinates, robotsPositions } = robotsMovementsInput;
 
@@ -112,7 +110,7 @@ const getFinalRobotPositions = (robotsMovementsInput) => {
                     robotCurrentCoords[2] = newDirection;
                 } else if(robotInstruction[i] === 'F') {
                     // Moves the robot in the given direction and get the updated coordinates
-                    newCoords = moveRobotAndGetNewCords(robotCurrentCoords, boundaryCoords);
+                    newCoords = moveRobotAndGetNewCords(robotCurrentCoords, boundaryCoords, robotLostCoords, robotsFinalCoords);
                     if(newCoords.includes('LOST')) {
                         robotFall = true;
                         break;
@@ -130,31 +128,7 @@ const getFinalRobotPositions = (robotsMovementsInput) => {
         robotsFinalCoords.forEach(robotFinalCoord => {
             robotsNewPositions.push(robotFinalCoord.join(' '));
         });
-    
+        
         return robotsNewPositions;
     }
-    
 };
-
-const robotsMovementsInput = {
-    'upperCoordinates': '5 3',
-    'numOfRobots': 3,
-    'robotsPositions': [
-        {
-            'robotPosition': '1 1 E',
-            'robotInstruction': 'RFRFRFRF'
-        },
-        {
-            'robotPosition': '3 2 N',
-            'robotInstruction': 'FRRFLLFFRRFLL'
-        },
-        {
-            'robotPosition': '0 3 W',
-            'robotInstruction': 'LLFFFLFLFL'
-        }
-    ]
-};
-
-let finalRobotCoords = getFinalRobotPositions(robotsMovementsInput);
-console.log('final robot positions', finalRobotCoords );
-export default finalRobotCoords;
