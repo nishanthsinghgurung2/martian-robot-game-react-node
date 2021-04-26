@@ -13,7 +13,6 @@ app.use(_express["default"].urlencoded({
 }));
 app.use(_express["default"].json());
 app.get("/get-final-robots-coords", function (req, res) {
-  console.log('req body...', req.body);
   res.json({
     data: (0, _getFinalRobotPositions.getFinalRobotPositions)(req.body)
   });
