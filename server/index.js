@@ -7,8 +7,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/get-final-robots-coords", (req, res) => {
-  res.json({ data: getFinalRobotPositions(req.body)});
+app.post("/get-final-robots-coords", (req, res) => {
+  res.status(200).json({ data: getFinalRobotPositions(req.body)});
 });
 
 app.use((req, res, next) => {
@@ -29,3 +29,5 @@ app.use((error, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
+
+export default app;

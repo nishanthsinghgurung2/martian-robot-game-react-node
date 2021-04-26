@@ -120,6 +120,10 @@ export const getFinalRobotPositions = (robotsMovementsInput) => {
     let boundaryCoords;
     let robotsNewPositions = [];
     const robotLostCoords = [];
+
+    if(!robotsMovementsInput){
+        throw new Error('Invalid input');
+    }
     
     const { upperCoordinates, robotsPositions } = robotsMovementsInput;
 
