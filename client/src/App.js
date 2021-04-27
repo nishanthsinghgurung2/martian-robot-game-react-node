@@ -1,64 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
+import useRobotFinalPositionCalculate from './useRobotFinalPositionCalculate';
+import { isAnyRobotPositionInvalid } from './utils/utility';
 
 const App = () => {
-  const blankRobotPosition = { robotPosition: '', robotInstruction: ''}
-  const [upperCoordinates, setUpperCoordinates] = useState('');
-  const [robotPositions, setRobotPositions] = useState([{}]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [finalRobotCoordinates, setFinalRobotCoordinates] = useState([]);
+  const {
+    robotPositions,
+    error,
+    loading,
+    finalRobotCoordinates,
+    upperCoordinatesError,
+    robotPositionErrors,
+    robotInstructionErrors,
+    updateUpperCoordinates,
+    addRobotsPositions,
+    handlePositionChange,
+    calculateFinalRobotPositions
+  } = useRobotFinalPositionCalculate();
 
-  const updateUpperCoordinates = (e) => {
-    setUpperCoordinates(e.target.value);
-  };
-
-  const addRobotsPositions = (e) => {
-    e.preventDefault();
-    setRobotPositions([...robotPositions, {...blankRobotPosition}]);
-  }
-
-  const handlePositionChange = (e) => {
-    const updatedRobotPositions = [...robotPositions];
-    updatedRobotPositions[e.target.dataset.idx][e.target.className] = e.target.value;
-    setRobotPositions(updatedRobotPositions);
-  };
-
-  const calculateFinalRobotPositions = async(e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setFinalRobotCoordinates([]);
-    try {
-      const response = await fetch('http://localhost:3001/get-final-robots-coords',{
-        method: 'POST',
-        mode: 'cors',
-        referrerPolicy: 'no-referrer',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          upperCoordinates: upperCoordinates,
-          robotsPositions: robotPositions
-        })
-      });
-
-      const result = await response.json();
-      if(response.ok) {
-        setError('');
-        setFinalRobotCoordinates(result && result.data);
-      } else {
-        throw new Error(result && result.error && result.error.message);
-      }
-    } catch(err) {
-      console.log('Error occured while fetching data!!!',err);
-      setError(err.message)
-      setFinalRobotCoordinates([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
   return (
     <div className="App">
       <header><h1>Martian Robots Game</h1></header>
@@ -66,6 +25,7 @@ const App = () => {
         <label className="robots-position-form-item" htmlFor="text-upper-coords">
           Enter upper coordinates:
           <input name="text-upper-coords" type="text" onBlur={updateUpperCoordinates} />
+          { upperCoordinatesError? <div className="error">Invalid upper coordinates</div>: null}
         </label>
         
         {robotPositions.length > 0? robotPositions.map((elem, index) => {
@@ -82,8 +42,9 @@ const App = () => {
                     data-idx={index}
                     className="robotPosition"
                     value={robotPositions[index].position}
-                    onChange={handlePositionChange}
+                    onBlur={handlePositionChange}
                     type="text" />
+                    { robotPositionErrors[index]? <div className="error">Invalid robot position</div>: null}
                 </label>
                 <label className="robots-position-form-item" htmlFor={robotInstructionId}>
                   Enter robot{index + 1} instruction:
@@ -94,8 +55,9 @@ const App = () => {
                     data-idx={index}
                     className="robotInstruction"
                     value={robotPositions[index].instruction}
-                    onChange={handlePositionChange}
+                    onBlur={handlePositionChange}
                     type="text" />
+                    { robotInstructionErrors[index]? <div className="error">Invalid robot instruction</div>: null}
                 </label>
               </div>
             );
@@ -105,7 +67,12 @@ const App = () => {
           Add robots positions and instructions by clicking here:
           <button onClick={addRobotsPositions}>Add robots</button>
         </label>
-        <button className="robots-position-form-item final-robot-positions" onClick={calculateFinalRobotPositions}>Get Final Robot Positions</button>
+        <button 
+          className="robots-position-form-item final-robot-positions"
+          disabled={upperCoordinatesError || isAnyRobotPositionInvalid(robotPositionErrors, robotInstructionErrors)}
+          onClick={calculateFinalRobotPositions}>
+            Get Final Robot Positions
+        </button>
       </form>
       <footer>
         <h3 className="footer-header">Final robot coordinates:</h3>
