@@ -80,7 +80,7 @@ const moveRobotAndGetNewCords = (robotCurrentCoords, boundaryCoords, robotLostCo
 const isRobotPositionInvalid = (robotPosition) => {
     if(robotPosition && typeof robotPosition === 'string') {
         const robotPositionArr = robotPosition.split(' ');
-        if(robotPositionArr.length == 3 && 
+        if(robotPositionArr.length === 3 && 
             (Number(robotPositionArr[0])>=0 && Number(robotPositionArr[0])<=50) &&
             (Number(robotPositionArr[1])>=0 && Number(robotPositionArr[1])<=50) &&
             (robotPositionArr[2] === 'N' || robotPositionArr[2] === 'E'|| 
