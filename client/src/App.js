@@ -20,12 +20,18 @@ const App = () => {
 
   return (
     <div className="App">
-      <header><h1>Martian Robots Game</h1></header>
+      <header>
+        <h1>Martian Robots Game</h1>
+      </header>
       <form className="robots-position-form">
         <label className="robots-position-form-item" htmlFor="text-upper-coords">
           Enter upper coordinates:
-          <input name="text-upper-coords" type="text" onBlur={updateUpperCoordinates} />
-          { upperCoordinatesError? <div className="error">Invalid upper coordinates</div>: null}
+          <input
+            data-testid="text-upper-coords"
+            name="text-upper-coords"
+            type="text"
+            onBlur={updateUpperCoordinates} />
+          { upperCoordinatesError? <div data-testid="upper-coords-invalid-error" className="error">Invalid upper coordinates</div>: null}
         </label>
         
         {robotPositions.length > 0? robotPositions.map((elem, index) => {
@@ -44,7 +50,7 @@ const App = () => {
                     value={robotPositions[index].position}
                     onBlur={handlePositionChange}
                     type="text" />
-                    { robotPositionErrors[index]? <div className="error">Invalid robot position</div>: null}
+                    { robotPositionErrors[index]? <div data-testid={`${robotPositionId}-error`} className="error">Invalid robot position</div>: null}
                 </label>
                 <label className="robots-position-form-item" htmlFor={robotInstructionId}>
                   Enter robot{index + 1} instruction:
@@ -57,7 +63,7 @@ const App = () => {
                     value={robotPositions[index].instruction}
                     onBlur={handlePositionChange}
                     type="text" />
-                    { robotInstructionErrors[index]? <div className="error">Invalid robot instruction</div>: null}
+                    { robotInstructionErrors[index]? <div data-testid={`${robotInstructionId}-error`} className="error">Invalid robot instruction</div>: null}
                 </label>
               </div>
             );
@@ -65,9 +71,10 @@ const App = () => {
         ): null}
         <label className="robots-position-form-item" htmlFor="robot-instruction">
           Add robots positions and instructions by clicking here:
-          <button onClick={addRobotsPositions}>Add robots</button>
+          <button data-testid="add-robots" onClick={addRobotsPositions}>Add robots</button>
         </label>
         <button 
+          data-testid="get-final-robot-positions"
           className="robots-position-form-item final-robot-positions"
           disabled={upperCoordinatesError || isAnyRobotPositionInvalid(robotPositionErrors, robotInstructionErrors)}
           onClick={calculateFinalRobotPositions}>
@@ -77,12 +84,12 @@ const App = () => {
       <footer>
         <h3 className="footer-header">Final robot coordinates:</h3>
         {loading? <div>Loading....</div>: null}
-        {error ? <div className='error'>{error}</div> : null}
+        {error ? <div data-testid="server-error" className='error'>{error}</div> : null}
         
         {finalRobotCoordinates.length > 0 ? (
           <>
-            <div>
-              {finalRobotCoordinates.map(finalRobotCoordinate => <div>{finalRobotCoordinate}</div>)}
+            <div data-testid='final-robot-positions'>
+              {finalRobotCoordinates.map((finalRobotCoordinate, index) => <div key={`final-robot-coord-${index}`} data-testid={`final-robot-coord-${index}`}>{finalRobotCoordinate}</div>)}
             </div>
           </>
         ): null}
