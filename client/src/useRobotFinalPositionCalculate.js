@@ -26,34 +26,33 @@ const useRobotFinalPositionCalculate = () => {
         setRobotPositions([...robotPositions, {...blankRobotPosition}]);
     }
 
+    const updateRobotPosition = (e) => {
+        const updatedRobotPositions = [...robotPositions];
+        updatedRobotPositions[e.target.dataset.idx][e.target.className] = e.target.value;
+        setRobotPositions(updatedRobotPositions);
+    }
+
     const handlePositionChange = (e) => {
         if(e.target.className === 'robotPosition'){
-            if(isRobotPositionInvalid(e.target.value)) {
-                const updatedRobotPositionError = [...robotPositionErrors];
-                updatedRobotPositionError[e.target.dataset.idx] = true;
-                setRobotPositionError(updatedRobotPositionError);
-            } else {
-                const updatedRobotPositionError = [...robotPositionErrors];
-                updatedRobotPositionError[e.target.dataset.idx] = false;
-                setRobotPositionError(updatedRobotPositionError);
+            const updatedRobotPositionError = [...robotPositionErrors];
 
-                const updatedRobotPositions = [...robotPositions];
-                updatedRobotPositions[e.target.dataset.idx][e.target.className] = e.target.value;
-                setRobotPositions(updatedRobotPositions);
+            if(isRobotPositionInvalid(e.target.value)) {
+                updatedRobotPositionError[e.target.dataset.idx] = true;
+            } else {
+                updatedRobotPositionError[e.target.dataset.idx] = false;
+                updateRobotPosition(e);
             }
+            setRobotPositionError(updatedRobotPositionError);
+
         } else if(e.target.className === 'robotInstruction'){
             const updatedRobotInstructionError = [...robotInstructionErrors];
             if(isRobotInstructionInvalid(e.target.value)) {
                 updatedRobotInstructionError[e.target.dataset.idx] = true;
-                setRobotInstructionError(updatedRobotInstructionError);
             } else {
                 updatedRobotInstructionError[e.target.dataset.idx] = false;
-                setRobotInstructionError(updatedRobotInstructionError);
-
-                const updatedRobotPositions = [...robotPositions];
-                updatedRobotPositions[e.target.dataset.idx][e.target.className] = e.target.value;
-                setRobotPositions(updatedRobotPositions);
+                updateRobotPosition(e);
             }
+            setRobotInstructionError(updatedRobotInstructionError);
         }
     };
 
@@ -63,32 +62,33 @@ const useRobotFinalPositionCalculate = () => {
         setError('');
         setFinalRobotCoordinates([]);
         try {
-        const response = await fetch('http://localhost:3001/get-final-robots-coords',{
-            method: 'POST',
-            mode: 'cors',
-            referrerPolicy: 'no-referrer',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-            upperCoordinates: upperCoordinates,
-            robotsPositions: robotPositions
-            })
-        });
+            const response = await fetch('http://localhost:3001/get-final-robots-coords',{
+                method: 'POST',
+                mode: 'cors',
+                referrerPolicy: 'no-referrer',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                upperCoordinates: upperCoordinates,
+                robotsPositions: robotPositions
+                })
+            });
 
-        const result = await response.json();
-        if(response.ok) {
-            setError('');
-            setFinalRobotCoordinates(result && result.data);
-        } else {
-            throw new Error(result && result.error && result.error.message);
-        }
+            const result = await response.json();
+            
+            if(response.ok) {
+                setError('');
+                setFinalRobotCoordinates(result && result.data);
+            } else {
+                throw new Error(result && result.error && result.error.message);
+            }
         } catch(err) {
-        console.log('Error occured while fetching data!!!',err);
-        setError(err.message)
-        setFinalRobotCoordinates([]);
+            console.log('Error occured while fetching data!!!',err);
+            setError(err.message)
+            setFinalRobotCoordinates([]);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
     return {
