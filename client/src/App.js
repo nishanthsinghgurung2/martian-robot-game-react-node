@@ -29,6 +29,7 @@ const App = () => {
           Enter upper coordinates:
           <input
             data-testid="text-upper-coords"
+            id="text-upper-coords"
             aria-label="Enter upper coordinates"
             aria-required="true"
             name="text-upper-coords"
@@ -95,12 +96,14 @@ const App = () => {
           Add robots positions and instructions by clicking here:
           <button 
             data-testid="add-robots"
+            id="add-robots"
             onClick={addRobotsPositions}
             aria-label="Add robots"
           >Add robots</button>
         </label>
         <button 
           data-testid="get-final-robot-positions"
+          id="get-final-robot-positions"
           className="robots-position-form-item final-robot-positions"
           disabled={upperCoordinatesError || isAnyRobotPositionInvalid(robotPositionErrors, robotInstructionErrors)}
           aria-label="Get Final Robot Positions"

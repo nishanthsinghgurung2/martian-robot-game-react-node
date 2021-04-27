@@ -29,5 +29,7 @@ Follow the steps given below to start the client:
 
 * Run `yarn test` to run the unit tests.
 
+* Run `yarn cypress:open` to run the cypress integration tests(Please make sure that the client react app is running before running cypress e2e tests)
+
 
 
