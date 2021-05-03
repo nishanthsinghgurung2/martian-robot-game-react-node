@@ -7,8 +7,9 @@
     "proxy": "http://localhost:3001",
     "build": "rm -rf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
     "babel-node": "babel-node --presets='@babel/preset-env'",
-    "start": "nodemon --exec npm run babel-node -- index.js",
-    "test": "mocha '__tests__/**/*.js' --recursive --timeout 60000 --exit"
+    "start": "nodemon --exec npm run babel-node -- src/index.js",
+    "test": "mocha '__tests__/**/*.js' --recursive --timeout 60000 --exit",
+    "lint": "eslint src/**/*.js"
   },
   "keywords": [],
   "author": "",
@@ -22,12 +23,9 @@
     "chai-http": "^4.3.0",
     "core-js": "^3.11.0",
     "cors": "^2.8.5",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
     "express": "^4.17.1",
     "mocha": "^8.3.2",
     "nodemon": "^2.0.7",
-    "prettier": "^2.2.1",
     "regenerator-runtime": "^0.13.7",
     "sinon-chai": "^3.6.0",
     "supertest": "^6.1.3"
@@ -37,6 +35,9 @@
     "@babel/core": "^7.13.16",
     "@babel/preset-env": "^7.13.15",
     "eslint": "^7.25.0",
-    "eslint-plugin-react": "^7.23.2"
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.2.1"
   }
 }
